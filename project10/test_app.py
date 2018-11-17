@@ -9,6 +9,8 @@ import models
 
 BASE_URL = '127.0.0.1:5000/api/v1/todos'
 
+DATABASE = SqliteDatabase(':memory:')
+
 
 class TestProjectApi(TestCase):
     def setUp(self):
@@ -16,6 +18,9 @@ class TestProjectApi(TestCase):
         self.app.testing = True
         self.client = self.app.test_client()
         self.todo_test_data = {'name': 'Pick up Orange Juice'}
+
+        DATABASE.connect()
+        DATABASE.create_tables([models.Todo], safe=True)
 
     def test_api_get_todos(self):
         resp = self.client.post('/api/v1/todos', data=self.todo_test_data)
@@ -53,6 +58,14 @@ class TestProjectApi(TestCase):
     def test_todos_view(self):
         resp = self.client.get('/')
         self.assertEqual(resp.status_code, 200)
+
+    def tearDown(self):
+        """tearDown method
+        - delete tables
+        - close database
+        """
+        DATABASE.drop_tables(models.Todo)
+        DATABASE.close()
 
 
 if __name__ == "__main__":
