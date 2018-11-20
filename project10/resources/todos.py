@@ -11,6 +11,7 @@ todo_fields = {
 }
 
 
+@marshal_with(todo_fields)
 def todo_or_404(todos_id):
     """Get the To-Do or give 404 Error"""
     try:
